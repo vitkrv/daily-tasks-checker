@@ -2,9 +2,6 @@ const STORAGE_KEY = "daily-tasks-checker-v1";
 const MAX_VISIBLE_DAYS = 10;
 
 const state = loadState();
-ensureTodayEntry();
-render();
-registerServiceWorker();
 
 const tablePanel = document.getElementById("table-panel");
 const modal = document.getElementById("task-modal");
@@ -14,6 +11,10 @@ const taskForm = document.getElementById("task-form");
 const taskNameInput = document.getElementById("task-name");
 const taskEmojiInput = document.getElementById("task-emoji");
 const formError = document.getElementById("form-error");
+
+ensureTodayEntry();
+render();
+registerServiceWorker();
 
 openModalBtn.addEventListener("click", () => {
   modal.classList.remove("hidden");
