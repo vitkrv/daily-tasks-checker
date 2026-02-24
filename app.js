@@ -228,11 +228,25 @@ function getVisibleDateKeys() {
   return Array.from({ length: MAX_VISIBLE_DAYS }, (_, index) => dateKey(MAX_VISIBLE_DAYS - 1 - index));
 }
 
-function toggleTask(date, taskId) {
+function toggleTask(date, taskId, cellElement) {
   if (!state.entries[date]) state.entries[date] = {};
-  state.entries[date][taskId] = !state.entries[date][taskId];
+  const checked = !state.entries[date][taskId];
+  state.entries[date][taskId] = checked;
   persistState();
+
+  if (cellElement) {
+    const task = state.tasks.find((item) => item.id === taskId);
+    applyRoutineCellState(cellElement, task?.name ?? "Routine", checked);
+    return;
+  }
+
   render();
+}
+
+function applyRoutineCellState(cell, taskName, checked) {
+  cell.classList.toggle("checked", checked);
+  cell.textContent = checked ? "✓" : "";
+  cell.setAttribute("aria-label", `${taskName} ${checked ? "checked" : "unchecked"}`);
 }
 
 function render() {
@@ -280,7 +294,7 @@ function render() {
     if (row.classList.contains("past")) return;
 
     cell.addEventListener("click", () => {
-      toggleTask(cell.dataset.date, cell.dataset.taskId);
+      toggleTask(cell.dataset.date, cell.dataset.taskId, cell);
     });
   });
 
