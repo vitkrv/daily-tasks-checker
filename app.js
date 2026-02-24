@@ -83,6 +83,7 @@ function updateViewModeButton() {
 function applyViewModeLayout() {
   const isFull = viewMode === "full";
   tablePanel.classList.toggle("mode-full", isFull);
+  tablePanel.classList.toggle("mode-focused", !isFull);
   appShell.classList.toggle("mode-full", isFull);
 }
 
@@ -243,6 +244,7 @@ function showNotification(text) {
 
 function getRowOpacity(daysBeforeToday) {
   if (daysBeforeToday <= 0) return 1;
+  if (viewMode === "full") return 0.8;
   if (daysBeforeToday === 1) return 0.8;
   if (daysBeforeToday === 2) return 0.5;
   if (daysBeforeToday === 3) return 0.2;

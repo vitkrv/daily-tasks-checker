@@ -66,7 +66,7 @@ body {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0;
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -80,6 +80,11 @@ body {
 .table-panel.mode-full {
   width: 100%;
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 106px);
+  overflow: auto;
+}
+
+.table-panel.mode-focused {
+  overflow: hidden;
 }
 
 table {
@@ -207,6 +212,37 @@ input {
   color: var(--text);
   padding: 10px;
   font-size: 1rem;
+}
+
+.input-hint {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: rgba(245, 246, 255, 0.7);
+}
+
+.rules-box {
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 12px;
+}
+
+.rules-box-title {
+  margin: 0 0 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.rules-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.rules-box li {
+  margin: 4px 0;
+  color: rgba(245, 246, 255, 0.82);
+  font-size: 0.86rem;
 }
 
 .form-error {
