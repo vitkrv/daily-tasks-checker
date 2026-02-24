@@ -36,6 +36,10 @@ body {
   padding: calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 80px);
 }
 
+.app-shell.mode-full {
+  padding-right: 0;
+}
+
 .view-mode-btn {
   position: fixed;
   right: 16px;
@@ -74,7 +78,7 @@ body {
 }
 
 .table-panel.mode-full {
-  width: calc(100% - 24px);
+  width: 100%;
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 106px);
 }
 

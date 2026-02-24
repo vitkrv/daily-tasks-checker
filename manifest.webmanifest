@@ -1,7 +1,7 @@
 {
   "name": "Daily Tasks Checker",
   "short_name": "Tasks",
-  "start_url": "./",
+  "start_url": "./index.html?source=pwa",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a1f4d",
@@ -20,5 +20,6 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }

@@ -5,6 +5,7 @@ const INITIAL_VISIBLE_PAST_DAYS = 3;
 const state = loadState();
 
 const tablePanel = document.getElementById("table-panel");
+const appShell = document.querySelector(".app-shell");
 const modal = document.getElementById("task-modal");
 const openModalBtn = document.getElementById("open-modal");
 const cancelModalBtn = document.getElementById("cancel-modal");
@@ -27,6 +28,7 @@ ensureTodayEntry();
 render();
 registerServiceWorker();
 updateViewModeButton();
+applyViewModeLayout();
 
 openModalBtn.addEventListener("click", () => {
   modal.classList.remove("hidden");
@@ -68,13 +70,20 @@ taskForm.addEventListener("submit", (event) => {
 
 toggleViewModeBtn.addEventListener("click", () => {
   viewMode = viewMode === "focused" ? "full" : "focused";
-  tablePanel.classList.toggle("mode-full", viewMode === "full");
   updateViewModeButton();
+  applyViewModeLayout();
+  scrollTableToPreferredPosition();
 });
 
 function updateViewModeButton() {
   toggleViewModeBtn.innerHTML = viewMode === "full" ? fullModeIcon : focusedModeIcon;
   toggleViewModeBtn.setAttribute("aria-label", `View mode: ${viewMode}`);
+}
+
+function applyViewModeLayout() {
+  const isFull = viewMode === "full";
+  tablePanel.classList.toggle("mode-full", isFull);
+  appShell.classList.toggle("mode-full", isFull);
 }
 
 function closeModal() {
@@ -209,6 +218,15 @@ function render() {
     });
   });
 
+  scrollTableToPreferredPosition();
+}
+
+function scrollTableToPreferredPosition() {
+  if (viewMode === "full") {
+    tablePanel.scrollTop = tablePanel.scrollHeight;
+    return;
+  }
+
   const rowHeight = 56;
   tablePanel.scrollTop = Math.max(0, tablePanel.scrollHeight - rowHeight * (INITIAL_VISIBLE_PAST_DAYS + 1));
 }
@@ -242,8 +260,11 @@ function escapeHtml(text) {
 
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {
-      // best effort only
-    });
+    navigator.serviceWorker
+      .register("service-worker.js", { updateViaCache: "none" })
+      .then((registration) => registration.update())
+      .catch(() => {
+        // best effort only
+      });
   }
 }
