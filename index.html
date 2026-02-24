@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a1f4d" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Daily Tasks Checker</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="table-panel" class="table-panel" aria-label="Routine tracker table"></section>
+
+      <button id="open-modal" class="fab" type="button" aria-label="Add routine">
+        +
+      </button>
+    </main>
+
+    <div id="task-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-card">
+        <h2 id="modal-title">Add Routine</h2>
+        <form id="task-form" novalidate>
+          <label for="task-name">Routine full name</label>
+          <input id="task-name" name="taskName" type="text" maxlength="64" required />
+
+          <label for="task-emoji">Emoji</label>
+          <input id="task-emoji" name="taskEmoji" type="text" maxlength="8" required />
+          <p id="form-error" class="form-error" aria-live="polite"></p>
+
+          <div class="modal-actions">
+            <button type="button" id="cancel-modal" class="btn btn-cancel">Cancel</button>
+            <button type="submit" class="btn btn-add">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

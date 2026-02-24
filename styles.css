@@ -1,0 +1,197 @@
+:root {
+  --bg-top: #0a1f4d;
+  --bg-bottom: #2d1042;
+  --text: #f5f6ff;
+  --panel-bg: rgba(10, 8, 36, 0.55);
+  --line: rgba(255, 255, 255, 0.18);
+  --green: rgba(106, 219, 122, 0.58);
+  --danger: #cb3b3b;
+  --ok: #2b9c4d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--text);
+}
+
+body {
+  background: linear-gradient(to top, var(--bg-bottom), var(--bg-top));
+}
+
+.app-shell {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 80px);
+}
+
+.table-panel {
+  width: min(100%, 920px);
+  height: min(72vh, 560px);
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  backdrop-filter: blur(4px);
+}
+
+table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  min-width: 74px;
+  height: 56px;
+  text-align: center;
+  border: 1px solid var(--line);
+  font-size: 1rem;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(8, 8, 26, 0.95);
+}
+
+th.date-col,
+td.date-col {
+  min-width: 108px;
+  padding: 0 8px;
+  text-align: left;
+}
+
+tbody tr.past {
+  opacity: 0.5;
+}
+
+.routine-cell {
+  cursor: pointer;
+  user-select: none;
+}
+
+.routine-cell.checked {
+  background: var(--green);
+  color: #111;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+tbody tr.past .routine-cell {
+  cursor: not-allowed;
+}
+
+.fab {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: #ffdd57;
+  color: #222;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.56);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(100%, 420px);
+  background: #11153d;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+}
+
+.modal-card h2 {
+  margin: 0 0 12px;
+}
+
+label {
+  display: block;
+  margin: 10px 0 4px;
+}
+
+input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.form-error {
+  min-height: 20px;
+  margin: 8px 0 0;
+  color: #ff8e8e;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 700;
+}
+
+.btn-cancel {
+  background: var(--danger);
+}
+
+.btn-add {
+  background: var(--ok);
+}
+
+@media (max-width: 560px) {
+  th,
+  td {
+    min-width: 60px;
+    height: 50px;
+  }
+
+  th.date-col,
+  td.date-col {
+    min-width: 94px;
+    font-size: 0.9rem;
+  }
+}
