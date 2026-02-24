@@ -72,7 +72,7 @@ toggleViewModeBtn.addEventListener("click", () => {
   viewMode = viewMode === "focused" ? "full" : "focused";
   updateViewModeButton();
   applyViewModeLayout();
-  scrollTableToPreferredPosition();
+  render();
 });
 
 function updateViewModeButton() {
