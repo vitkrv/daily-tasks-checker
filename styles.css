@@ -86,6 +86,10 @@ tfoot th {
   background: rgba(8, 8, 26, 0.6);
 }
 
+tfoot th.date-col {
+  background: transparent;
+}
+
 th.date-col,
 td.date-col {
   min-width: 108px;
@@ -107,6 +111,13 @@ td.date-col {
 
 tbody tr.past .routine-cell {
   cursor: not-allowed;
+}
+
+tbody tr.today td {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(10, 8, 36, 0.92);
 }
 
 .fab {
