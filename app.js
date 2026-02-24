@@ -15,12 +15,18 @@ const formError = document.getElementById("form-error");
 const notification = document.getElementById("top-notification");
 const toggleViewModeBtn = document.getElementById("toggle-view-mode");
 
+const fullModeIcon =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3H5a2 2 0 0 0-2 2v4h2V5h4zm10 0h-4v2h4v4h2V5a2 2 0 0 0-2-2M5 15H3v4a2 2 0 0 0 2 2h4v-2H5zm16 0h-2v4h-4v2h4a2 2 0 0 0 2-2z"/></svg>';
+const focusedModeIcon =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 10V3h2v5h5v2zm-4 0H3V8h5V3h2zm4 4h7v2h-5v5h-2zm-4 0v7H8v-5H3v-2z"/></svg>';
+
 let viewMode = "focused";
 let notificationTimer;
 
 ensureTodayEntry();
 render();
 registerServiceWorker();
+updateViewModeButton();
 
 openModalBtn.addEventListener("click", () => {
   modal.classList.remove("hidden");
@@ -63,8 +69,13 @@ taskForm.addEventListener("submit", (event) => {
 toggleViewModeBtn.addEventListener("click", () => {
   viewMode = viewMode === "focused" ? "full" : "focused";
   tablePanel.classList.toggle("mode-full", viewMode === "full");
-  toggleViewModeBtn.textContent = viewMode === "full" ? "Focused" : "Full";
+  updateViewModeButton();
 });
+
+function updateViewModeButton() {
+  toggleViewModeBtn.innerHTML = viewMode === "full" ? fullModeIcon : focusedModeIcon;
+  toggleViewModeBtn.setAttribute("aria-label", `View mode: ${viewMode}`);
+}
 
 function closeModal() {
   modal.classList.add("hidden");
