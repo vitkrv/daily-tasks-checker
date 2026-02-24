@@ -15,6 +15,11 @@ const taskEmojiInput = document.getElementById("task-emoji");
 const formError = document.getElementById("form-error");
 const notification = document.getElementById("top-notification");
 const toggleViewModeBtn = document.getElementById("toggle-view-mode");
+const removeModal = document.getElementById("remove-modal");
+const openRemoveModalBtn = document.getElementById("open-remove-modal");
+const cancelRemoveModalBtn = document.getElementById("cancel-remove-modal");
+const applyRemoveModalBtn = document.getElementById("apply-remove-modal");
+const removeList = document.getElementById("remove-list");
 
 const fullModeIcon =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3H5a2 2 0 0 0-2 2v4h2V5h4zm10 0h-4v2h4v4h2V5a2 2 0 0 0-2-2M5 15H3v4a2 2 0 0 0 2 2h4v-2H5zm16 0h-2v4h-4v2h4a2 2 0 0 0 2-2z"/></svg>';
@@ -23,6 +28,7 @@ const focusedModeIcon =
 
 let viewMode = "focused";
 let notificationTimer;
+let pendingTaskRemovals = new Set();
 
 ensureTodayEntry();
 render();
@@ -68,6 +74,14 @@ taskForm.addEventListener("submit", (event) => {
   closeModal();
 });
 
+openRemoveModalBtn.addEventListener("click", openRemoveModal);
+cancelRemoveModalBtn.addEventListener("click", closeRemoveModal);
+applyRemoveModalBtn.addEventListener("click", applyTaskRemovals);
+
+removeModal.addEventListener("click", (event) => {
+  if (event.target === removeModal) closeRemoveModal();
+});
+
 toggleViewModeBtn.addEventListener("click", () => {
   viewMode = viewMode === "focused" ? "full" : "focused";
   updateViewModeButton();
@@ -91,6 +105,62 @@ function closeModal() {
   modal.classList.add("hidden");
   taskForm.reset();
   formError.textContent = "";
+}
+
+function openRemoveModal() {
+  pendingTaskRemovals = new Set();
+  renderRemoveList();
+  removeModal.classList.remove("hidden");
+}
+
+function closeRemoveModal() {
+  removeModal.classList.add("hidden");
+  pendingTaskRemovals = new Set();
+}
+
+function renderRemoveList() {
+  if (state.tasks.length === 0) {
+    removeList.innerHTML = '<p class="input-hint">No columns available.</p>';
+    return;
+  }
+
+  removeList.innerHTML = state.tasks
+    .map((task) => {
+      const selected = pendingTaskRemovals.has(task.id);
+      return `<button type="button" class="remove-list-item ${selected ? "selected" : ""}" data-task-id="${task.id}"><span class="remove-list-name">${escapeHtml(task.name)}</span><span class="remove-list-shortcut">${escapeHtml(task.emoji)}</span></button>`;
+    })
+    .join("");
+
+  removeList.querySelectorAll(".remove-list-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      const { taskId } = item.dataset;
+      if (pendingTaskRemovals.has(taskId)) {
+        pendingTaskRemovals.delete(taskId);
+      } else {
+        pendingTaskRemovals.add(taskId);
+      }
+      renderRemoveList();
+    });
+  });
+}
+
+function applyTaskRemovals() {
+  if (pendingTaskRemovals.size === 0) {
+    closeRemoveModal();
+    return;
+  }
+
+  state.tasks = state.tasks.filter((task) => !pendingTaskRemovals.has(task.id));
+
+  Object.keys(state.entries).forEach((date) => {
+    pendingTaskRemovals.forEach((taskId) => {
+      delete state.entries[date][taskId];
+    });
+  });
+
+  persistState();
+  render();
+  closeRemoveModal();
 }
 
 function isValidTaskEmoji(value) {

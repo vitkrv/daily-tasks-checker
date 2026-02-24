@@ -274,6 +274,48 @@ input {
   background: var(--ok);
 }
 
+
+.fab-remove {
+  left: 16px;
+  transform: none;
+  width: 30px;
+  height: 30px;
+  font-size: 1.4rem;
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+}
+
+.remove-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.remove-list-item {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+
+.remove-list-item.selected {
+  border-color: #ff8e8e;
+  background: rgba(203, 59, 59, 0.25);
+}
+
+.remove-list-shortcut {
+  opacity: 0.8;
+  font-weight: 700;
+}
+
 @media (max-width: 560px) {
   th,
   td {

@@ -20,6 +20,9 @@
 
       <section id="table-panel" class="table-panel" aria-label="Routine tracker table"></section>
 
+      <button id="open-remove-modal" class="fab fab-remove" type="button" aria-label="Remove routine column">
+        -
+      </button>
       <button id="open-modal" class="fab" type="button" aria-label="Add routine">
         +
       </button>
@@ -52,6 +55,25 @@
             <button type="submit" class="btn btn-add">Add</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div
+      id="remove-modal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="remove-modal-title"
+    >
+      <div class="modal-card">
+        <h2 id="remove-modal-title">Remove Columns</h2>
+        <p class="input-hint">Select columns to remove. Changes are applied only after clicking Apply.</p>
+        <div id="remove-list" class="remove-list" role="list"></div>
+
+        <div class="modal-actions">
+          <button type="button" id="cancel-remove-modal" class="btn btn-cancel">Cancel</button>
+          <button type="button" id="apply-remove-modal" class="btn btn-add">Apply</button>
+        </div>
       </div>
     </div>
 
