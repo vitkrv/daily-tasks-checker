@@ -49,8 +49,8 @@ taskForm.addEventListener("submit", (event) => {
     return;
   }
 
-  if (!isSingleEmoji(emoji)) {
-    formError.textContent = "Emoji field must contain a valid emoji.";
+  if (!isValidTaskEmoji(emoji)) {
+    formError.textContent = "Emoji field must be one emoji or up to 3 symbols.";
     return;
   }
 
@@ -83,15 +83,26 @@ function closeModal() {
   formError.textContent = "";
 }
 
-function isSingleEmoji(value) {
+function isValidTaskEmoji(value) {
   if (!value) return false;
 
-  const segments = [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(value)].map(
+  const segments = getGraphemeSegments(value);
+
+  if (segments.length > 3) return false;
+
+  if (segments.length === 1 && /\p{Extended_Pictographic}/u.test(segments[0])) {
+    return true;
+  }
+
+  return segments.length >= 1;
+}
+
+function getGraphemeSegments(value) {
+  if (!value) return [];
+
+  return [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(value)].map(
     (segment) => segment.segment,
   );
-
-  if (segments.length !== 1) return false;
-  return /\p{Extended_Pictographic}/u.test(segments[0]);
 }
 
 function loadState() {
