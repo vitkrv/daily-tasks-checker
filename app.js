@@ -136,7 +136,6 @@ function toggleTask(date, taskId) {
 function render() {
   const dates = getVisibleDateKeys();
   const today = dateKey(0);
-  const todayIndex = dates.indexOf(today);
 
   const headers = state.tasks
     .map((task) => `<th data-name="${escapeHtml(task.name)}" title="Tap to view full name">${escapeHtml(task.emoji)}</th>`)
@@ -145,10 +144,8 @@ function render() {
   const rows = dates
     .map((date, index) => {
       const isToday = date === today;
-      const distanceFromToday = todayIndex - index;
-      const opacity = isToday
-        ? 1
-        : Math.max(0, Math.min(0.8, 0.8 * (1 - (distanceFromToday - 1) / Math.max(todayIndex - 1, 1))));
+      const daysBeforeToday = Math.max(0, dates.length - 1 - index);
+      const opacity = getRowOpacity(daysBeforeToday);
       const cells = state.tasks
         .map((task) => {
           const checked = Boolean(state.entries[date]?.[task.id]);
@@ -202,6 +199,14 @@ function showNotification(text) {
   notificationTimer = setTimeout(() => {
     notification.classList.add("hidden");
   }, 4000);
+}
+
+function getRowOpacity(daysBeforeToday) {
+  if (daysBeforeToday <= 0) return 1;
+  if (daysBeforeToday === 1) return 0.8;
+  if (daysBeforeToday === 2) return 0.5;
+  if (daysBeforeToday === 3) return 0.2;
+  return 0;
 }
 
 function escapeHtml(text) {
