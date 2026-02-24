@@ -124,6 +124,11 @@ td.date-col {
 .routine-cell {
   cursor: pointer;
   user-select: none;
+  transition: background-color 180ms ease, color 180ms ease, font-size 180ms ease, transform 180ms ease;
+}
+
+.routine-cell:active {
+  transform: scale(0.96);
 }
 
 .routine-cell.checked {
@@ -135,6 +140,10 @@ td.date-col {
 
 tbody tr.past .routine-cell {
   cursor: not-allowed;
+}
+
+tbody tr + tr td {
+  border-top-color: rgba(255, 255, 255, 0.28);
 }
 
 tbody tr.today td {
