@@ -31,9 +31,20 @@
         <form id="task-form" novalidate>
           <label for="task-name">Routine full name</label>
           <input id="task-name" name="taskName" type="text" maxlength="64" required />
+          <p class="input-hint">Required. Use a clear full name, up to 64 characters.</p>
 
           <label for="task-emoji">Emoji</label>
           <input id="task-emoji" name="taskEmoji" type="text" maxlength="16" required />
+          <p class="input-hint">Required. Enter either one emoji or up to 3 symbols.</p>
+
+          <div class="rules-box" aria-label="Input requirements">
+            <p class="rules-box-title">Field requirements</p>
+            <ul>
+              <li>Routine full name cannot be empty and must be at most 64 characters.</li>
+              <li>Emoji field accepts one emoji or up to 3 symbols.</li>
+            </ul>
+          </div>
+
           <p id="form-error" class="form-error" aria-live="polite"></p>
 
           <div class="modal-actions">
