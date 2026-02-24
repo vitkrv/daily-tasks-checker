@@ -136,14 +136,19 @@ function toggleTask(date, taskId) {
 function render() {
   const dates = getVisibleDateKeys();
   const today = dateKey(0);
+  const todayIndex = dates.indexOf(today);
 
   const headers = state.tasks
     .map((task) => `<th data-name="${escapeHtml(task.name)}" title="Tap to view full name">${escapeHtml(task.emoji)}</th>`)
     .join("");
 
   const rows = dates
-    .map((date) => {
+    .map((date, index) => {
       const isToday = date === today;
+      const distanceFromToday = todayIndex - index;
+      const opacity = isToday
+        ? 1
+        : Math.max(0, Math.min(0.8, 0.8 * (1 - (distanceFromToday - 1) / Math.max(todayIndex - 1, 1))));
       const cells = state.tasks
         .map((task) => {
           const checked = Boolean(state.entries[date]?.[task.id]);
@@ -154,19 +159,19 @@ function render() {
         })
         .join("");
 
-      return `<tr class="${isToday ? "today" : "past"}"><td class="date-col">${prettyDate(date)}</td>${cells}</tr>`;
+      return `<tr class="${isToday ? "today" : "past"}" style="opacity:${opacity.toFixed(2)}"><td class="date-col">${prettyDate(date)}</td>${cells}</tr>`;
     })
     .join("");
 
   tablePanel.innerHTML = `
     <table>
-      <thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
         <tr>
           <th class="date-col"></th>
           ${headers}
         </tr>
-      </thead>
-      <tbody>${rows}</tbody>
+      </tfoot>
     </table>
   `;
 
@@ -179,7 +184,7 @@ function render() {
     });
   });
 
-  tablePanel.querySelectorAll("thead th[data-name]").forEach((header) => {
+  tablePanel.querySelectorAll("tfoot th[data-name]").forEach((header) => {
     header.addEventListener("click", () => {
       showNotification(header.dataset.name);
     });
