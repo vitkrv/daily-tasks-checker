@@ -38,14 +38,22 @@ body {
 
 .view-mode-btn {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 14px);
-  right: 12px;
+  right: 16px;
+  bottom: calc(env(safe-area-inset-bottom) + 31px);
   border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 999px;
+  border-radius: 50%;
   background: rgba(0, 0, 0, 0.25);
   color: var(--text);
-  padding: 8px 14px;
-  font-size: 0.9rem;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.view-mode-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .table-panel {
