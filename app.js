@@ -178,6 +178,7 @@ function render() {
       const isToday = date === today;
       const daysBeforeToday = Math.max(0, dates.length - 1 - index);
       const opacity = getRowOpacity(daysBeforeToday);
+      const visibility = getRowVisibility(daysBeforeToday);
       const cells = state.tasks
         .map((task) => {
           const checked = Boolean(state.entries[date]?.[task.id]);
@@ -188,7 +189,7 @@ function render() {
         })
         .join("");
 
-      return `<tr class="${isToday ? "today" : "past"}" style="opacity:${opacity.toFixed(2)}"><td class="date-col">${prettyDate(date)}</td>${cells}</tr>`;
+      return `<tr class="${isToday ? "today" : "past"}" style="opacity:${opacity.toFixed(2)};visibility:${visibility}"><td class="date-col">${prettyDate(date)}</td>${cells}</tr>`;
     })
     .join("");
 
@@ -249,6 +250,11 @@ function getRowOpacity(daysBeforeToday) {
   if (daysBeforeToday === 2) return 0.5;
   if (daysBeforeToday === 3) return 0.2;
   return 0;
+}
+
+function getRowVisibility(daysBeforeToday) {
+  if (viewMode === "full") return "visible";
+  return daysBeforeToday <= 3 ? "visible" : "hidden";
 }
 
 function escapeHtml(text) {
