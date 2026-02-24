@@ -290,7 +290,9 @@ input {
   width: 30px;
   height: 30px;
   font-size: 1.4rem;
-  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  bottom: calc(env(safe-area-inset-bottom) + 31px);
+  background: #ffd9d9;
+  color: #6d1f1f;
 }
 
 .remove-list {
