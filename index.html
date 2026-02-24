@@ -14,7 +14,12 @@
     <title>Daily Tasks Checker</title>
   </head>
   <body>
+    <div id="top-notification" class="top-notification hidden" role="status" aria-live="polite"></div>
     <main class="app-shell">
+      <button id="toggle-view-mode" class="view-mode-btn" type="button" aria-label="Toggle table mode">
+        Full
+      </button>
+
       <section id="table-panel" class="table-panel" aria-label="Routine tracker table"></section>
 
       <button id="open-modal" class="fab" type="button" aria-label="Add routine">

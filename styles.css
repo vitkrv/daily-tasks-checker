@@ -36,15 +36,31 @@ body {
   padding: calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 80px);
 }
 
+.view-mode-btn {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 14px);
+  right: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  padding: 8px 14px;
+  font-size: 0.9rem;
+}
+
 .table-panel {
   width: min(100%, 920px);
-  height: min(72vh, 560px);
-  background: var(--panel-bg);
-  border: 1px solid var(--line);
+  height: min(72vh, 280px);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 14px;
   overflow: auto;
   overscroll-behavior: contain;
-  backdrop-filter: blur(4px);
+}
+
+.table-panel.mode-full {
+  width: calc(100% - 24px);
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 106px);
 }
 
 table {
@@ -58,7 +74,7 @@ td {
   min-width: 74px;
   height: 56px;
   text-align: center;
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
   font-size: 1rem;
 }
 
@@ -66,7 +82,7 @@ thead th {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: rgba(8, 8, 26, 0.95);
+  background: rgba(8, 8, 26, 0.6);
 }
 
 th.date-col,
@@ -111,6 +127,19 @@ tbody tr.past .routine-cell {
   line-height: 1;
   font-weight: 700;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.top-notification {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  z-index: 10;
 }
 
 .modal-overlay {

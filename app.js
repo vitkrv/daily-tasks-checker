@@ -1,5 +1,6 @@
 const STORAGE_KEY = "daily-tasks-checker-v1";
-const MAX_VISIBLE_DAYS = 10;
+const MAX_VISIBLE_DAYS = 30;
+const INITIAL_VISIBLE_PAST_DAYS = 3;
 
 const state = loadState();
 
@@ -11,6 +12,11 @@ const taskForm = document.getElementById("task-form");
 const taskNameInput = document.getElementById("task-name");
 const taskEmojiInput = document.getElementById("task-emoji");
 const formError = document.getElementById("form-error");
+const notification = document.getElementById("top-notification");
+const toggleViewModeBtn = document.getElementById("toggle-view-mode");
+
+let viewMode = "focused";
+let notificationTimer;
 
 ensureTodayEntry();
 render();
@@ -52,6 +58,12 @@ taskForm.addEventListener("submit", (event) => {
   persistState();
   render();
   closeModal();
+});
+
+toggleViewModeBtn.addEventListener("click", () => {
+  viewMode = viewMode === "focused" ? "full" : "focused";
+  tablePanel.classList.toggle("mode-full", viewMode === "full");
+  toggleViewModeBtn.textContent = viewMode === "full" ? "Focused" : "Full";
 });
 
 function closeModal() {
@@ -169,11 +181,22 @@ function render() {
 
   tablePanel.querySelectorAll("thead th[data-name]").forEach((header) => {
     header.addEventListener("click", () => {
-      alert(header.dataset.name);
+      showNotification(header.dataset.name);
     });
   });
 
-  tablePanel.scrollTop = tablePanel.scrollHeight;
+  const rowHeight = 56;
+  tablePanel.scrollTop = Math.max(0, tablePanel.scrollHeight - rowHeight * (INITIAL_VISIBLE_PAST_DAYS + 1));
+}
+
+function showNotification(text) {
+  clearTimeout(notificationTimer);
+  notification.textContent = text;
+  notification.classList.remove("hidden");
+
+  notificationTimer = setTimeout(() => {
+    notification.classList.add("hidden");
+  }, 4000);
 }
 
 function escapeHtml(text) {
