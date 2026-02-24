@@ -64,6 +64,13 @@ body {
   border-radius: 0;
   overflow: auto;
   overscroll-behavior: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.table-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .table-panel.mode-full {
@@ -150,11 +157,11 @@ tbody tr.today td {
   top: calc(env(safe-area-inset-top) + 14px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  background: #c9f5c7;
+  color: #000;
   border-radius: 12px;
   padding: 6px 12px;
-  font-size: 0.85rem;
+  font-size: 1rem;
   z-index: 10;
 }
 
