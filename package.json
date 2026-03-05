@@ -1,0 +1,7 @@
+{
+  "name": "daily-tasks-checker",
+  "private": true,
+  "scripts": {
+    "check:syntax": "node --check app.js && node --check service-worker.js"
+  }
+}
