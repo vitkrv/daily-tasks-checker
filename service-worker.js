@@ -1,4 +1,8 @@
-const CACHE_NAME = "daily-tasks-checker-cache-v2";
+const CACHE_NAME = "daily-tasks-checker-cache-v3";
+const NETWORK_WAIT_MS = 3000;
+const BACKGROUND_RETRIES = 3;
+const BACKGROUND_RETRY_WINDOW_MS = 10000;
+
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -37,22 +41,62 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(networkFirst(event.request));
+  event.respondWith(networkWithFastFallback(event.request, event));
 });
 
-async function networkFirst(request) {
+async function networkWithFastFallback(request, event) {
   const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
 
   try {
-    const networkResponse = await fetch(request, { cache: "no-store" });
+    const networkResponse = await fetchWithTimeout(request, NETWORK_WAIT_MS);
     cache.put(request, networkResponse.clone());
     return networkResponse;
   } catch {
-    const cachedResponse = await cache.match(request);
     if (cachedResponse) {
+      event.waitUntil(refreshInBackground(request, cache));
       return cachedResponse;
     }
 
     throw new Error("Network request failed and no cached response found.");
   }
+}
+
+async function refreshInBackground(request, cache) {
+  const deadline = Date.now() + BACKGROUND_RETRY_WINDOW_MS;
+
+  for (let attempt = 1; attempt <= BACKGROUND_RETRIES; attempt += 1) {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) {
+      return;
+    }
+
+    const timeoutMs = Math.min(NETWORK_WAIT_MS, remaining);
+
+    try {
+      const response = await fetchWithTimeout(request, timeoutMs);
+      cache.put(request, response.clone());
+      return;
+    } catch {
+      const delayMs = Math.min(500 * attempt, Math.max(deadline - Date.now(), 0));
+      if (attempt < BACKGROUND_RETRIES && delayMs > 0) {
+        await delay(delayMs);
+      }
+    }
+  }
+}
+
+function fetchWithTimeout(request, timeoutMs) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  return fetch(request, { cache: "no-store", signal: controller.signal }).finally(() => {
+    clearTimeout(timeoutId);
+  });
+}
+
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
