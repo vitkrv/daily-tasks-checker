@@ -36,16 +36,28 @@ body {
   padding: calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 80px);
 }
 
+.app-shell.mode-full {
+  padding-right: 12px;
+}
+
 .view-mode-btn {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 14px);
-  right: 12px;
+  right: 16px;
+  bottom: calc(env(safe-area-inset-bottom) + 31px);
   border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 999px;
+  border-radius: 50%;
   background: rgba(0, 0, 0, 0.25);
   color: var(--text);
-  padding: 8px 14px;
-  font-size: 0.9rem;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.view-mode-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .table-panel {
@@ -54,13 +66,25 @@ body {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0;
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.table-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .table-panel.mode-full {
-  width: calc(100% - 24px);
+  width: 100%;
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 106px);
+  overflow: auto;
+}
+
+.table-panel.mode-focused {
+  overflow: hidden;
 }
 
 table {
@@ -86,6 +110,10 @@ tfoot th {
   background: rgba(8, 8, 26, 0.6);
 }
 
+tfoot th.date-col {
+  background: transparent;
+}
+
 th.date-col,
 td.date-col {
   min-width: 108px;
@@ -96,6 +124,11 @@ td.date-col {
 .routine-cell {
   cursor: pointer;
   user-select: none;
+  transition: background-color 180ms ease, color 180ms ease, font-size 180ms ease, transform 180ms ease;
+}
+
+.routine-cell:active {
+  transform: scale(0.96);
 }
 
 .routine-cell.checked {
@@ -107,6 +140,17 @@ td.date-col {
 
 tbody tr.past .routine-cell {
   cursor: not-allowed;
+}
+
+tbody tr + tr td {
+  border-top-color: rgba(255, 255, 255, 0.28);
+}
+
+tbody tr.today td {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(10, 8, 36, 0.92);
 }
 
 .fab {
@@ -131,11 +175,11 @@ tbody tr.past .routine-cell {
   top: calc(env(safe-area-inset-top) + 14px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  background: #c9f5c7;
+  color: #000;
   border-radius: 12px;
   padding: 6px 12px;
-  font-size: 0.85rem;
+  font-size: 1rem;
   z-index: 10;
 }
 
@@ -179,6 +223,37 @@ input {
   font-size: 1rem;
 }
 
+.input-hint {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: rgba(245, 246, 255, 0.7);
+}
+
+.rules-box {
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 12px;
+}
+
+.rules-box-title {
+  margin: 0 0 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.rules-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.rules-box li {
+  margin: 4px 0;
+  color: rgba(245, 246, 255, 0.82);
+  font-size: 0.86rem;
+}
+
 .form-error {
   min-height: 20px;
   margin: 8px 0 0;
@@ -206,6 +281,50 @@ input {
 
 .btn-add {
   background: var(--ok);
+}
+
+
+.fab-remove {
+  left: 16px;
+  transform: none;
+  width: 30px;
+  height: 30px;
+  font-size: 1.4rem;
+  bottom: calc(env(safe-area-inset-bottom) + 31px);
+  background: #ffd9d9;
+  color: #6d1f1f;
+}
+
+.remove-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.remove-list-item {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+
+.remove-list-item.selected {
+  border-color: #ff8e8e;
+  background: rgba(203, 59, 59, 0.25);
+}
+
+.remove-list-shortcut {
+  opacity: 0.8;
+  font-weight: 700;
 }
 
 @media (max-width: 560px) {

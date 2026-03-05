@@ -16,12 +16,13 @@
   <body>
     <div id="top-notification" class="top-notification hidden" role="status" aria-live="polite"></div>
     <main class="app-shell">
-      <button id="toggle-view-mode" class="view-mode-btn" type="button" aria-label="Toggle table mode">
-        Full
-      </button>
+      <button id="toggle-view-mode" class="view-mode-btn" type="button" aria-label="View mode: focused"></button>
 
       <section id="table-panel" class="table-panel" aria-label="Routine tracker table"></section>
 
+      <button id="open-remove-modal" class="fab fab-remove" type="button" aria-label="Remove routine column">
+        -
+      </button>
       <button id="open-modal" class="fab" type="button" aria-label="Add routine">
         +
       </button>
@@ -33,9 +34,20 @@
         <form id="task-form" novalidate>
           <label for="task-name">Routine full name</label>
           <input id="task-name" name="taskName" type="text" maxlength="64" required />
+          <p class="input-hint">Required. Use a clear full name, up to 64 characters.</p>
 
           <label for="task-emoji">Emoji</label>
-          <input id="task-emoji" name="taskEmoji" type="text" maxlength="8" required />
+          <input id="task-emoji" name="taskEmoji" type="text" maxlength="16" required />
+          <p class="input-hint">Required. Enter either one emoji or up to 3 symbols.</p>
+
+          <div class="rules-box" aria-label="Input requirements">
+            <p class="rules-box-title">Field requirements</p>
+            <ul>
+              <li>Routine full name cannot be empty and must be at most 64 characters.</li>
+              <li>Emoji field accepts one emoji or up to 3 symbols.</li>
+            </ul>
+          </div>
+
           <p id="form-error" class="form-error" aria-live="polite"></p>
 
           <div class="modal-actions">
@@ -43,6 +55,25 @@
             <button type="submit" class="btn btn-add">Add</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div
+      id="remove-modal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="remove-modal-title"
+    >
+      <div class="modal-card">
+        <h2 id="remove-modal-title">Remove Columns</h2>
+        <p class="input-hint">Select columns to remove. Changes are applied only after clicking Apply.</p>
+        <div id="remove-list" class="remove-list" role="list"></div>
+
+        <div class="modal-actions">
+          <button type="button" id="cancel-remove-modal" class="btn btn-cancel">Cancel</button>
+          <button type="button" id="apply-remove-modal" class="btn btn-add">Apply</button>
+        </div>
       </div>
     </div>
 

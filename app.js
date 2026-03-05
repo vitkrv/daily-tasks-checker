@@ -5,6 +5,7 @@ const INITIAL_VISIBLE_PAST_DAYS = 3;
 const state = loadState();
 
 const tablePanel = document.getElementById("table-panel");
+const appShell = document.querySelector(".app-shell");
 const modal = document.getElementById("task-modal");
 const openModalBtn = document.getElementById("open-modal");
 const cancelModalBtn = document.getElementById("cancel-modal");
@@ -14,13 +15,26 @@ const taskEmojiInput = document.getElementById("task-emoji");
 const formError = document.getElementById("form-error");
 const notification = document.getElementById("top-notification");
 const toggleViewModeBtn = document.getElementById("toggle-view-mode");
+const removeModal = document.getElementById("remove-modal");
+const openRemoveModalBtn = document.getElementById("open-remove-modal");
+const cancelRemoveModalBtn = document.getElementById("cancel-remove-modal");
+const applyRemoveModalBtn = document.getElementById("apply-remove-modal");
+const removeList = document.getElementById("remove-list");
+
+const fullModeIcon =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3H5a2 2 0 0 0-2 2v4h2V5h4zm10 0h-4v2h4v4h2V5a2 2 0 0 0-2-2M5 15H3v4a2 2 0 0 0 2 2h4v-2H5zm16 0h-2v4h-4v2h4a2 2 0 0 0 2-2z"/></svg>';
+const focusedModeIcon =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 10V3h2v5h5v2zm-4 0H3V8h5V3h2zm4 4h7v2h-5v5h-2zm-4 0v7H8v-5H3v-2z"/></svg>';
 
 let viewMode = "focused";
 let notificationTimer;
+let pendingTaskRemovals = new Set();
 
 ensureTodayEntry();
 render();
 registerServiceWorker();
+updateViewModeButton();
+applyViewModeLayout();
 
 openModalBtn.addEventListener("click", () => {
   modal.classList.remove("hidden");
@@ -43,8 +57,8 @@ taskForm.addEventListener("submit", (event) => {
     return;
   }
 
-  if (!isSingleEmoji(emoji)) {
-    formError.textContent = "Emoji field must contain a valid emoji.";
+  if (!isValidTaskEmoji(emoji)) {
+    formError.textContent = "Emoji field must be one emoji or up to 3 symbols.";
     return;
   }
 
@@ -60,11 +74,32 @@ taskForm.addEventListener("submit", (event) => {
   closeModal();
 });
 
+openRemoveModalBtn.addEventListener("click", openRemoveModal);
+cancelRemoveModalBtn.addEventListener("click", closeRemoveModal);
+applyRemoveModalBtn.addEventListener("click", applyTaskRemovals);
+
+removeModal.addEventListener("click", (event) => {
+  if (event.target === removeModal) closeRemoveModal();
+});
+
 toggleViewModeBtn.addEventListener("click", () => {
   viewMode = viewMode === "focused" ? "full" : "focused";
-  tablePanel.classList.toggle("mode-full", viewMode === "full");
-  toggleViewModeBtn.textContent = viewMode === "full" ? "Focused" : "Full";
+  updateViewModeButton();
+  applyViewModeLayout();
+  render();
 });
+
+function updateViewModeButton() {
+  toggleViewModeBtn.innerHTML = viewMode === "full" ? fullModeIcon : focusedModeIcon;
+  toggleViewModeBtn.setAttribute("aria-label", `View mode: ${viewMode}`);
+}
+
+function applyViewModeLayout() {
+  const isFull = viewMode === "full";
+  tablePanel.classList.toggle("mode-full", isFull);
+  tablePanel.classList.toggle("mode-focused", !isFull);
+  appShell.classList.toggle("mode-full", isFull);
+}
 
 function closeModal() {
   modal.classList.add("hidden");
@@ -72,15 +107,82 @@ function closeModal() {
   formError.textContent = "";
 }
 
-function isSingleEmoji(value) {
+function openRemoveModal() {
+  pendingTaskRemovals = new Set();
+  renderRemoveList();
+  removeModal.classList.remove("hidden");
+}
+
+function closeRemoveModal() {
+  removeModal.classList.add("hidden");
+  pendingTaskRemovals = new Set();
+}
+
+function renderRemoveList() {
+  if (state.tasks.length === 0) {
+    removeList.innerHTML = '<p class="input-hint">No columns available.</p>';
+    return;
+  }
+
+  removeList.innerHTML = state.tasks
+    .map((task) => {
+      const selected = pendingTaskRemovals.has(task.id);
+      return `<button type="button" class="remove-list-item ${selected ? "selected" : ""}" data-task-id="${task.id}"><span class="remove-list-name">${escapeHtml(task.name)}</span><span class="remove-list-shortcut">${escapeHtml(task.emoji)}</span></button>`;
+    })
+    .join("");
+
+  removeList.querySelectorAll(".remove-list-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      const { taskId } = item.dataset;
+      if (pendingTaskRemovals.has(taskId)) {
+        pendingTaskRemovals.delete(taskId);
+      } else {
+        pendingTaskRemovals.add(taskId);
+      }
+      renderRemoveList();
+    });
+  });
+}
+
+function applyTaskRemovals() {
+  if (pendingTaskRemovals.size === 0) {
+    closeRemoveModal();
+    return;
+  }
+
+  state.tasks = state.tasks.filter((task) => !pendingTaskRemovals.has(task.id));
+
+  Object.keys(state.entries).forEach((date) => {
+    pendingTaskRemovals.forEach((taskId) => {
+      delete state.entries[date][taskId];
+    });
+  });
+
+  persistState();
+  render();
+  closeRemoveModal();
+}
+
+function isValidTaskEmoji(value) {
   if (!value) return false;
 
-  const segments = [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(value)].map(
+  const segments = getGraphemeSegments(value);
+
+  if (segments.length > 3) return false;
+
+  if (segments.length === 1 && /\p{Extended_Pictographic}/u.test(segments[0])) {
+    return true;
+  }
+
+  return segments.length >= 1;
+}
+
+function getGraphemeSegments(value) {
+  if (!value) return [];
+
+  return [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(value)].map(
     (segment) => segment.segment,
   );
-
-  if (segments.length !== 1) return false;
-  return /\p{Extended_Pictographic}/u.test(segments[0]);
 }
 
 function loadState() {
@@ -129,17 +231,30 @@ function getVisibleDateKeys() {
   return Array.from({ length: MAX_VISIBLE_DAYS }, (_, index) => dateKey(MAX_VISIBLE_DAYS - 1 - index));
 }
 
-function toggleTask(date, taskId) {
+function toggleTask(date, taskId, cellElement) {
   if (!state.entries[date]) state.entries[date] = {};
-  state.entries[date][taskId] = !state.entries[date][taskId];
+  const checked = !state.entries[date][taskId];
+  state.entries[date][taskId] = checked;
   persistState();
+
+  if (cellElement) {
+    const task = state.tasks.find((item) => item.id === taskId);
+    applyRoutineCellState(cellElement, task?.name ?? "Routine", checked);
+    return;
+  }
+
   render();
+}
+
+function applyRoutineCellState(cell, taskName, checked) {
+  cell.classList.toggle("checked", checked);
+  cell.textContent = checked ? "✓" : "";
+  cell.setAttribute("aria-label", `${taskName} ${checked ? "checked" : "unchecked"}`);
 }
 
 function render() {
   const dates = getVisibleDateKeys();
   const today = dateKey(0);
-  const todayIndex = dates.indexOf(today);
 
   const headers = state.tasks
     .map((task) => `<th data-name="${escapeHtml(task.name)}" title="Tap to view full name">${escapeHtml(task.emoji)}</th>`)
@@ -148,10 +263,9 @@ function render() {
   const rows = dates
     .map((date, index) => {
       const isToday = date === today;
-      const distanceFromToday = todayIndex - index;
-      const opacity = isToday
-        ? 1
-        : Math.max(0, Math.min(0.8, 0.8 * (1 - (distanceFromToday - 1) / Math.max(todayIndex - 1, 1))));
+      const daysBeforeToday = Math.max(0, dates.length - 1 - index);
+      const opacity = getRowOpacity(daysBeforeToday);
+      const visibility = getRowVisibility(daysBeforeToday);
       const cells = state.tasks
         .map((task) => {
           const checked = Boolean(state.entries[date]?.[task.id]);
@@ -162,7 +276,7 @@ function render() {
         })
         .join("");
 
-      return `<tr class="${isToday ? "today" : "past"}" style="opacity:${opacity.toFixed(2)}"><td class="date-col">${prettyDate(date)}</td>${cells}</tr>`;
+      return `<tr class="${isToday ? "today" : "past"}" style="opacity:${opacity.toFixed(2)};visibility:${visibility}"><td class="date-col">${prettyDate(date)}</td>${cells}</tr>`;
     })
     .join("");
 
@@ -183,7 +297,7 @@ function render() {
     if (row.classList.contains("past")) return;
 
     cell.addEventListener("click", () => {
-      toggleTask(cell.dataset.date, cell.dataset.taskId);
+      toggleTask(cell.dataset.date, cell.dataset.taskId, cell);
     });
   });
 
@@ -192,6 +306,15 @@ function render() {
       showNotification(header.dataset.name);
     });
   });
+
+  scrollTableToPreferredPosition();
+}
+
+function scrollTableToPreferredPosition() {
+  if (viewMode === "full") {
+    tablePanel.scrollTop = tablePanel.scrollHeight;
+    return;
+  }
 
   const rowHeight = 56;
   tablePanel.scrollTop = Math.max(0, tablePanel.scrollHeight - rowHeight * (INITIAL_VISIBLE_PAST_DAYS + 1));
@@ -207,6 +330,20 @@ function showNotification(text) {
   }, 4000);
 }
 
+function getRowOpacity(daysBeforeToday) {
+  if (daysBeforeToday <= 0) return 1;
+  if (viewMode === "full") return 0.8;
+  if (daysBeforeToday === 1) return 0.8;
+  if (daysBeforeToday === 2) return 0.5;
+  if (daysBeforeToday === 3) return 0.2;
+  return 0;
+}
+
+function getRowVisibility(daysBeforeToday) {
+  if (viewMode === "full") return "visible";
+  return daysBeforeToday <= 3 ? "visible" : "hidden";
+}
+
 function escapeHtml(text) {
   return text
     .replace(/&/g, "&amp;")
@@ -218,9 +355,12 @@ function escapeHtml(text) {
 
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {
-      // best effort only
-    });
+    navigator.serviceWorker
+      .register("service-worker.js", { updateViaCache: "none" })
+      .then((registration) => registration.update())
+      .catch(() => {
+        // best effort only
+      });
   }
 }
 
