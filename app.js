@@ -99,6 +99,7 @@ function applyViewModeLayout() {
   tablePanel.classList.toggle("mode-full", isFull);
   tablePanel.classList.toggle("mode-focused", !isFull);
   appShell.classList.toggle("mode-full", isFull);
+  document.body.classList.toggle("view-mode-full", isFull);
 }
 
 function closeModal() {

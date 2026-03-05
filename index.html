@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a1f4d" />
+    <meta name="theme-color" content="#1a1c2c" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -16,12 +16,22 @@
   <body>
     <div id="top-notification" class="top-notification hidden" role="status" aria-live="polite"></div>
     <main class="app-shell">
-      <button id="toggle-view-mode" class="view-mode-btn" type="button" aria-label="View mode: focused"></button>
+      <header class="top-app-bar">
+        <div>
+          <p class="top-app-bar-overline">Daily Tracker</p>
+          <h1 class="top-app-bar-title">Routine Checkpoints</h1>
+        </div>
+        <button id="toggle-view-mode" class="view-mode-btn" type="button" aria-label="View mode: focused"></button>
+      </header>
 
-      <section id="table-panel" class="table-panel" aria-label="Routine tracker table"></section>
+      <section class="table-card">
+        <section id="table-panel" class="table-panel" aria-label="Routine tracker table"></section>
+      </section>
 
       <button id="open-remove-modal" class="fab fab-remove" type="button" aria-label="Remove routine column">
-        -
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+          <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+        </svg>
       </button>
       <button id="open-modal" class="fab" type="button" aria-label="Add routine">
         +
@@ -29,15 +39,15 @@
     </main>
 
     <div id="task-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-card">
+      <div class="modal-card" role="document">
         <h2 id="modal-title">Add Routine</h2>
         <form id="task-form" novalidate>
-          <label for="task-name">Routine full name</label>
-          <input id="task-name" name="taskName" type="text" maxlength="64" required />
+          <label for="task-name" class="text-field-label">Routine full name</label>
+          <input id="task-name" name="taskName" type="text" maxlength="64" required autocomplete="off" />
           <p class="input-hint">Required. Use a clear full name, up to 64 characters.</p>
 
-          <label for="task-emoji">Emoji</label>
-          <input id="task-emoji" name="taskEmoji" type="text" maxlength="16" required />
+          <label for="task-emoji" class="text-field-label">Emoji</label>
+          <input id="task-emoji" name="taskEmoji" type="text" maxlength="16" required autocomplete="off" />
           <p class="input-hint">Required. Enter either one emoji or up to 3 symbols.</p>
 
           <div class="rules-box" aria-label="Input requirements">
@@ -65,7 +75,7 @@
       aria-modal="true"
       aria-labelledby="remove-modal-title"
     >
-      <div class="modal-card">
+      <div class="modal-card" role="document">
         <h2 id="remove-modal-title">Remove Columns</h2>
         <p class="input-hint">Select columns to remove. Changes are applied only after clicking Apply.</p>
         <div id="remove-list" class="remove-list" role="list"></div>
