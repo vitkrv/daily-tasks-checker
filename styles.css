@@ -2,7 +2,7 @@
   color-scheme: dark;
   --top-bar-height: 64px;
   --layout-gap: 14px;
-  --table-card-height: min(72vh, 300px);
+  --table-card-height: clamp(360px, 74vh, 500px);
   --md-sys-color-primary: #a9c7ff;
   --md-sys-color-on-primary: #0a2e66;
   --md-sys-color-primary-container: #1f3e78;
@@ -463,7 +463,7 @@ input:focus {
 @media (max-width: 560px) {
   :root {
     --top-bar-height: 60px;
-    --table-card-height: min(70vh, 320px);
+    --table-card-height: clamp(390px, 76vh, 560px);
   }
 
   .top-notification {
@@ -484,7 +484,7 @@ input:focus {
   }
 
   .table-card {
-    height: min(70vh, 320px);
+    height: var(--table-card-height);
     border-radius: var(--md-shape-corner-large);
   }
 

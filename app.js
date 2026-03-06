@@ -249,7 +249,7 @@ function toggleTask(date, taskId, cellElement) {
 
 function applyRoutineCellState(cell, taskName, checked) {
   cell.classList.toggle("checked", checked);
-  cell.textContent = checked ? "✓" : "";
+  cell.textContent = checked ? "\u2713" : "";
   cell.setAttribute("aria-label", `${taskName} ${checked ? "checked" : "unchecked"}`);
 }
 
@@ -273,7 +273,7 @@ function render() {
           const classes = ["routine-cell"];
           if (checked) classes.push("checked");
 
-          return `<td class="${classes.join(" ")}" data-date="${date}" data-task-id="${task.id}" aria-label="${escapeHtml(task.name)} ${checked ? "checked" : "unchecked"}">${checked ? "✓" : ""}</td>`;
+          return `<td class="${classes.join(" ")}" data-date="${date}" data-task-id="${task.id}" aria-label="${escapeHtml(task.name)} ${checked ? "checked" : "unchecked"}">${checked ? "\u2713" : ""}</td>`;
         })
         .join("");
 
@@ -317,7 +317,8 @@ function scrollTableToPreferredPosition() {
     return;
   }
 
-  const rowHeight = 56;
+  const firstBodyCell = tablePanel.querySelector("tbody td");
+  const rowHeight = firstBodyCell ? firstBodyCell.getBoundingClientRect().height : 56;
   tablePanel.scrollTop = Math.max(0, tablePanel.scrollHeight - rowHeight * (FOCUSED_VISIBLE_PAST_DAYS + 1));
 }
 
