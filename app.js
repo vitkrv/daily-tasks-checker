@@ -1,6 +1,6 @@
 const STORAGE_KEY = "daily-tasks-checker-v1";
 const MAX_VISIBLE_DAYS = 30;
-const INITIAL_VISIBLE_PAST_DAYS = 3;
+const FOCUSED_VISIBLE_PAST_DAYS = 5;
 
 const state = loadState();
 
@@ -318,7 +318,7 @@ function scrollTableToPreferredPosition() {
   }
 
   const rowHeight = 56;
-  tablePanel.scrollTop = Math.max(0, tablePanel.scrollHeight - rowHeight * (INITIAL_VISIBLE_PAST_DAYS + 1));
+  tablePanel.scrollTop = Math.max(0, tablePanel.scrollHeight - rowHeight * (FOCUSED_VISIBLE_PAST_DAYS + 1));
 }
 
 function showNotification(text) {
@@ -334,15 +334,21 @@ function showNotification(text) {
 function getRowOpacity(daysBeforeToday) {
   if (daysBeforeToday <= 0) return 1;
   if (viewMode === "full") return 0.8;
-  if (daysBeforeToday === 1) return 0.8;
-  if (daysBeforeToday === 2) return 0.5;
-  if (daysBeforeToday === 3) return 0.2;
-  return 0;
+
+  const focusedOpacity = {
+    1: 0.8,
+    2: 0.6,
+    3: 0.45,
+    4: 0.3,
+    5: 0.18,
+  };
+
+  return focusedOpacity[daysBeforeToday] ?? 0;
 }
 
 function getRowVisibility(daysBeforeToday) {
   if (viewMode === "full") return "visible";
-  return daysBeforeToday <= 3 ? "visible" : "hidden";
+  return daysBeforeToday <= FOCUSED_VISIBLE_PAST_DAYS ? "visible" : "hidden";
 }
 
 function escapeHtml(text) {
@@ -364,4 +370,3 @@ function registerServiceWorker() {
       });
   }
 }
-
